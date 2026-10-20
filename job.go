@@ -1,4 +1,5 @@
 // Copyright 2015 Vadim Kravcenko
+// Modified 2026 by BadgerBadgerBadgerBadger: parameter-aware queue check.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -419,19 +420,17 @@ func (j *Job) HasQueuedBuild() {
 	panic("Not Implemented yet")
 }
 
+// InvokeSimple queues a build and returns its queue item id from the Location
+// header. It refuses only when an item with identical parameters is already
+// queued, returning an *IdenticalBuildQueuedError (errors.Is
+// ErrIdenticalBuildQueued); queued items with other parameters do not block.
 func (j *Job) InvokeSimple(ctx context.Context, params map[string]string) (int64, error) {
-	isQueued, err := j.IsQueued(ctx)
-	if err != nil {
-		return 0, err
-	}
-	if isQueued {
-		Error.Printf("%s is already running", j.GetName())
-		return 0, nil
-	}
-
 	endpoint := "/build"
 	parameters, err := j.GetParameters(ctx)
 	if err != nil {
+		return 0, err
+	}
+	if err := j.checkQueuedDuplicate(ctx, params, parameters); err != nil {
 		return 0, err
 	}
 	if len(parameters) > 0 {
@@ -468,14 +467,15 @@ func (j *Job) InvokeSimple(ctx context.Context, params map[string]string) (int64
 	return number, nil
 }
 
+// Invoke refuses with an *IdenticalBuildQueuedError when an item with
+// identical parameters is already queued, as InvokeSimple does.
 func (j *Job) Invoke(ctx context.Context, files []string, skipIfRunning bool, params map[string]string, cause string, securityToken string) (bool, error) {
-	isQueued, err := j.IsQueued(ctx)
+	definitions, err := j.GetParameters(ctx)
 	if err != nil {
 		return false, err
 	}
-	if isQueued {
-		Error.Printf("%s is already running", j.GetName())
-		return false, nil
+	if err := j.checkQueuedDuplicate(ctx, params, definitions); err != nil {
+		return false, err
 	}
 	isRunning, err := j.IsRunning(ctx)
 	if err != nil {

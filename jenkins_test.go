@@ -16,6 +16,7 @@ var (
 )
 
 func TestInit(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	jenkins = CreateJenkins(nil, "http://localhost:8080", "admin", "admin")
 	_, err := jenkins.Init(ctx)
@@ -23,6 +24,7 @@ func TestInit(t *testing.T) {
 }
 
 func TestCreateJobs(t *testing.T) {
+	requireIntegration(t)
 	job1ID := "Job1_test"
 	job2ID := "job2_test"
 	job_data := getFileAsString("job.xml")
@@ -41,6 +43,7 @@ func TestCreateJobs(t *testing.T) {
 }
 
 func TestCreateNodes(t *testing.T) {
+	requireIntegration(t)
 
 	id1 := "node1_test"
 	//id2 := "node2_test"
@@ -64,6 +67,7 @@ func TestCreateNodes(t *testing.T) {
 }
 
 func TestDeleteNodes(t *testing.T) {
+	requireIntegration(t)
 	id := "node4_test"
 
 	ctx := context.Background()
@@ -72,6 +76,7 @@ func TestDeleteNodes(t *testing.T) {
 }
 
 func TestCreateBuilds(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	jobs, _ := jenkins.GetAllJobs(ctx)
 	for _, item := range jobs {
@@ -88,6 +93,7 @@ func TestCreateBuilds(t *testing.T) {
 }
 
 func TestGetQueueItem(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	task, err := jenkins.GetQueueItem(ctx, queueID)
 	if err != nil {
@@ -99,6 +105,7 @@ func TestGetQueueItem(t *testing.T) {
 }
 
 func TestParseBuildHistory(t *testing.T) {
+	requireIntegration(t)
 	r, err := os.Open("_tests/build_history.txt")
 	if err != nil {
 		panic(err)
@@ -108,6 +115,7 @@ func TestParseBuildHistory(t *testing.T) {
 }
 
 func TestCreateViews(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	list_view, err := jenkins.CreateView(ctx, "test_list_view", LIST_VIEW)
 	assert.Nil(t, err)
@@ -124,6 +132,7 @@ func TestCreateViews(t *testing.T) {
 }
 
 func TestGetAllJobs(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	jobs, _ := jenkins.GetAllJobs(ctx)
 	assert.Equal(t, 2, len(jobs))
@@ -131,6 +140,7 @@ func TestGetAllJobs(t *testing.T) {
 }
 
 func TestGetAllNodes(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	nodes, _ := jenkins.GetAllNodes(ctx)
 	assert.Equal(t, 3, len(nodes))
@@ -138,6 +148,7 @@ func TestGetAllNodes(t *testing.T) {
 }
 
 func TestGetAllBuilds(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	builds, _ := jenkins.GetAllBuildIds(ctx, "Job1_test")
 	for _, b := range builds {
@@ -148,6 +159,7 @@ func TestGetAllBuilds(t *testing.T) {
 }
 
 func TestGetLabel(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	label, err := jenkins.GetLabel(ctx, "test_label")
 	assert.Nil(t, err)
@@ -174,6 +186,7 @@ func TestGetLabel(t *testing.T) {
 }
 
 func TestBuildMethods(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	job, _ := jenkins.GetJob(ctx, "Job1_test")
 	build, _ := job.GetLastBuild(ctx)
@@ -182,6 +195,7 @@ func TestBuildMethods(t *testing.T) {
 }
 
 func TestGetSingleJob(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	job, _ := jenkins.GetJob(ctx, "Job1_test")
 	isRunning, _ := job.IsRunning(ctx)
@@ -192,6 +206,7 @@ func TestGetSingleJob(t *testing.T) {
 }
 
 func TestEnableDisableJob(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	job, _ := jenkins.GetJob(ctx, "Job1_test")
 	result, _ := job.Disable(ctx)
@@ -201,6 +216,7 @@ func TestEnableDisableJob(t *testing.T) {
 }
 
 func TestCopyDeleteJob(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	job, _ := jenkins.GetJob(ctx, "Job1_test")
 	jobCopy, _ := job.Copy(ctx, "Job1_test_copy")
@@ -210,12 +226,14 @@ func TestCopyDeleteJob(t *testing.T) {
 }
 
 func TestGetPlugins(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	plugins, _ := jenkins.GetPlugins(ctx, 3)
 	assert.Equal(t, 10, plugins.Count())
 }
 
 func TestGetViews(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	views, _ := jenkins.GetAllViews(ctx)
 	assert.Equal(t, len(views), 3)
@@ -223,6 +241,7 @@ func TestGetViews(t *testing.T) {
 }
 
 func TestGetSingleView(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	view, _ := jenkins.GetView(ctx, "All")
 	view2, _ := jenkins.GetView(ctx, "test_list_view")
@@ -232,6 +251,7 @@ func TestGetSingleView(t *testing.T) {
 }
 
 func TestCreateFolder(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	folder1ID := "folder1_test"
 	folder2ID := "folder2_test"
@@ -248,6 +268,7 @@ func TestCreateFolder(t *testing.T) {
 }
 
 func TestCreateJobInFolder(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	jobName := "Job_test"
 	job_data := getFileAsString("job.xml")
@@ -266,6 +287,7 @@ func TestCreateJobInFolder(t *testing.T) {
 }
 
 func TestGetFolder(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	folder1ID := "folder1_test"
 	folder2ID := "folder2_test"
@@ -281,6 +303,7 @@ func TestGetFolder(t *testing.T) {
 	assert.Equal(t, folder2ID, folder2.GetName())
 }
 func TestInstallPlugin(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 
 	err := jenkins.InstallPlugin(ctx, "packer", "1.4")
@@ -289,6 +312,7 @@ func TestInstallPlugin(t *testing.T) {
 }
 
 func TestConcurrentRequests(t *testing.T) {
+	requireIntegration(t)
 	ctx := context.Background()
 	for i := 0; i <= 16; i++ {
 		go func() {

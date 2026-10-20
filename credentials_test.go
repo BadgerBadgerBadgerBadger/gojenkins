@@ -18,6 +18,7 @@ var (
 )
 
 func TestCreateUsernameCredentials(t *testing.T) {
+	requireIntegration(t)
 
 	cred := UsernameCredentials{
 		ID:       usernameID,
@@ -40,6 +41,7 @@ func TestCreateUsernameCredentials(t *testing.T) {
 }
 
 func TestCreateDockerCredentials(t *testing.T) {
+	requireIntegration(t)
 
 	cred := DockerServerCredentials{
 		Scope:             scope,
@@ -66,6 +68,7 @@ func TestCreateDockerCredentials(t *testing.T) {
 }
 
 func TestCreateSSHCredentialsFullFlow(t *testing.T) {
+	requireIntegration(t)
 	sshCred := SSHCredentials{
 		Scope:      scope,
 		ID:         sshID,
@@ -103,7 +106,9 @@ func TestMain(m *testing.M) {
 	//setup
 	ctx := context.Background()
 	jenkins := CreateJenkins(nil, "http://localhost:8080", "admin", "admin")
-	jenkins.Init(ctx)
+	if integrationEnabled() {
+		jenkins.Init(ctx)
+	}
 
 	cm = CredentialsManager{J: jenkins}
 

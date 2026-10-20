@@ -1,5 +1,17 @@
 # Jenkins API Client for Go
 
+> **Fork of [bndr/gojenkins](https://github.com/bndr/gojenkins) v1.1.0**, module path
+> `github.com/BadgerBadgerBadgerBadger/gojenkins`.
+>
+> Why: upstream `InvokeSimple`/`BuildJob`/`Invoke` refuse to launch whenever the job has
+> *any* item in the queue (`inQueue`), whatever its parameters, and `InvokeSimple` then
+> returns queue id 0 with no error (upstream #205). Here they refuse only when a queued item
+> has exactly the requested parameters (after filling in the job's defaults), and return
+> `ErrIdenticalBuildQueued` (an `*IdenticalBuildQueuedError` carrying the queue item id).
+> Otherwise the build is queued and its own queue id returned, as before. Running builds
+> never block. Also: `golang.org/x/net` bumped for CVEs; integration tests run only with
+> `INTEGRATION` set.
+
 [![GoDoc](https://godoc.org/github.com/bndr/gojenkins?status.svg)](https://godoc.org/github.com/bndr/gojenkins)
 [![Go Report Cart](https://goreportcard.com/badge/github.com/bndr/gojenkins)](https://goreportcard.com/report/github.com/bndr/gojenkins)
 [![Build Status](https://travis-ci.org/bndr/gojenkins.svg?branch=master)](https://travis-ci.org/bndr/gojenkins)
@@ -20,14 +32,14 @@ These are some of the features that are currently implemented:
 
 ## Installation
 
-    go get github.com/bndr/gojenkins
+    go get github.com/BadgerBadgerBadgerBadger/gojenkins
 
 ## Usage
 
 ```go
 
 import (
-  "github.com/bndr/gojenkins"
+  "github.com/BadgerBadgerBadgerBadger/gojenkins"
   "context"
   "time"
   "fmt"
@@ -70,7 +82,7 @@ API Reference: https://godoc.org/github.com/bndr/gojenkins
 
 For all of the examples below first create a jenkins object
 ```go
-import "github.com/bndr/gojenkins"
+import "github.com/BadgerBadgerBadgerBadger/gojenkins"
 
 jenkins, _ := gojenkins.CreateJenkins(nil, "http://localhost:8080/", "admin", "admin").Init(ctx)
 ```
